@@ -58,8 +58,8 @@ resource "aws_ecs_service" "app" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets         = aws_subnet.main.*.id
-    security_groups = [aws_security_group.lb_sg.id]
+    subnets         = aws_subnet.public.*.id  # Use public subnets
+    security_groups = [aws_security_group.app_sg.id]  # Use app_sg
   }
 
   load_balancer {
