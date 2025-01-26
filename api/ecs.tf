@@ -1,5 +1,9 @@
 variable "docker_image" {}
 
+resource "aws_ecs_cluster" "main" {
+  name = "pr-cluster"
+}
+
 resource "aws_ecs_task_definition" "app" {
   family                   = "pr-express-task"
   network_mode             = "awsvpc"
@@ -16,9 +20,29 @@ resource "aws_ecs_task_definition" "app" {
       portMappings = [
         {
           containerPort = 3000
+          hostPort      = 3000
           protocol      = "tcp"
         }
       ]
     }
   ])
+}
+
+resource "aws_ecs_service" "app" {
+  name            = "pr-service"
+  cluster         = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.app.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets         = aws_subnet.main.*.id
+    security_groups = [aws_security_group.lb_sg.id]
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.main.arn
+    container_name   = "app-container"
+    container_port   = 3000
+  }
 }
