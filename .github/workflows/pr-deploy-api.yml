@@ -50,8 +50,10 @@ jobs:
           terraform_version: 1.10.5
 
       - name: Terraform Init
+        working-directory: ./api
         run: terraform init
 
       - name: Terraform Apply
+        working-directory: ./api
         run: |
           terraform apply -auto-approve -var="docker_image=724772081910.dkr.ecr.$AWS_REGION.amazonaws.com/${{ env.ECR_REPOSITORY }}:pr-${{ github.event.pull_request.number }}"

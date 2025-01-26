@@ -23,7 +23,9 @@ jobs:
           terraform_version: 1.10.5
 
       - name: Terraform Init
+        working-directory: ./api
         run: terraform init
 
       - name: Terraform Destroy
+        working-directory: ./api
         run: terraform destroy -auto-approve -var="docker_image=724772081910.dkr.ecr.us-east-1.amazonaws.com/${{ env.ECR_REPOSITORY }}:pr-${{ github.event.pull_request.number }}"
